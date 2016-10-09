@@ -13,6 +13,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
+    private Button mPreviousButton;
     private TextView mQuestionTextView;
     private Question[] mQuestions = new Question[] {
             new Question(R.string.question_oceans, true),
@@ -52,6 +53,18 @@ public class QuizActivity extends AppCompatActivity {
         };
         mNextButton = (Button) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(nextQuestionClickListener);
+
+        mPreviousButton = (Button) findViewById(R.id.previous_button);
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (mCurrentQuestion == 0) {
+                    mCurrentQuestion = mQuestions.length;
+                }
+                mCurrentQuestion = (mCurrentQuestion - 1) % mQuestions.length;
+                updateQuestion();
+            }
+        });
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         updateQuestion();
