@@ -1,4 +1,4 @@
-package geoquiz.marianosimone.com.geoquiz;
+package com.marianosimone.geoquiz;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,8 +7,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;

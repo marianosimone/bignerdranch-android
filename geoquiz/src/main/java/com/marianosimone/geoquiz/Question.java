@@ -1,4 +1,4 @@
-package geoquiz.marianosimone.com.geoquiz;
+package com.marianosimone.geoquiz;
 
 public class Question {
     private final int mTextResId;

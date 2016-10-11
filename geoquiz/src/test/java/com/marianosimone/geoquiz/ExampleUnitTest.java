@@ -1,4 +1,4 @@
-package geoquiz.marianosimone.com.geoquiz;
+package com.marianosimone.geoquiz;
 
 import org.junit.Test;
 
