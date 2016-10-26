@@ -14,12 +14,8 @@ public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
     private static final String KEY_QUESTION_INDEX = "question_index";
 
-    private Button mTrueButton;
-    private Button mFalseButton;
-    private ImageButton mNextButton;
-    private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
-    private Question[] mQuestions = new Question[] {
+    private final Question[] mQuestions = new Question[] {
             new Question(R.string.question_turkey, false),
             new Question(R.string.question_oceans, true),
             new Question(R.string.question_mideast, false),
@@ -36,15 +32,15 @@ public class QuizActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_quiz);
 
-        mTrueButton = (Button) findViewById(R.id.true_button);
-        mTrueButton.setOnClickListener(new View.OnClickListener() {
+        final Button trueButton = (Button) findViewById(R.id.true_button);
+        trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 checkAnswer(true);
             }
         });
-        mFalseButton = (Button) findViewById(R.id.false_button);
-        mFalseButton.setOnClickListener(new View.OnClickListener() {
+        final Button falseButton = (Button) findViewById(R.id.false_button);
+        falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 checkAnswer(false);
@@ -58,11 +54,11 @@ public class QuizActivity extends AppCompatActivity {
                 updateQuestion();
             }
         };
-        mNextButton = (ImageButton) findViewById(R.id.next_button);
-        mNextButton.setOnClickListener(nextQuestionClickListener);
+        final ImageButton nextButton = (ImageButton) findViewById(R.id.next_button);
+        nextButton.setOnClickListener(nextQuestionClickListener);
 
-        mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
-        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+        final ImageButton previousButton = (ImageButton) findViewById(R.id.previous_button);
+        previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 if (mCurrentQuestion == 0) {
