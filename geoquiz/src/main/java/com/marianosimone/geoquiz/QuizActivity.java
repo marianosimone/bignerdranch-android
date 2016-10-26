@@ -1,5 +1,7 @@
 package com.marianosimone.geoquiz;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_QUESTION_INDEX = "question_index";
+    private static final String KEY_IS_CHEATER = "is_cheater";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private TextView mQuestionTextView;
     private final Question[] mQuestions = new Question[] {
@@ -24,6 +28,7 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
     private int mCurrentQuestion = 0;
+    private boolean[] mIsCheater;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -31,6 +36,15 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle) called");
 
         setContentView(R.layout.activity_quiz);
+
+        if (savedInstanceState != null) {
+            mCurrentQuestion = savedInstanceState.getInt(KEY_QUESTION_INDEX, 0);
+            mIsCheater = savedInstanceState.getBooleanArray(KEY_IS_CHEATER);
+        }
+
+        if (mIsCheater == null) {
+            mIsCheater = new boolean[mQuestions.length];
+        }
 
         final Button trueButton = (Button) findViewById(R.id.true_button);
         trueButton.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +60,23 @@ public class QuizActivity extends AppCompatActivity {
                 checkAnswer(false);
             }
         });
-
+        final Button cheatButton = (Button) findViewById(R.id.cheat_button);
+        cheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final boolean answerIsTrue = mQuestions[mCurrentQuestion].isAnswerTrue();
+                startActivityForResult(
+                        CheatActivity.newIntent(QuizActivity.this, answerIsTrue),
+                        REQUEST_CODE_CHEAT
+                );
+            }
+        });
+        trueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                checkAnswer(true);
+            }
+        });
         final View.OnClickListener nextQuestionClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -70,9 +100,6 @@ public class QuizActivity extends AppCompatActivity {
         });
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-        if (savedInstanceState != null) {
-            mCurrentQuestion = savedInstanceState.getInt(KEY_QUESTION_INDEX, 0);
-        }
         updateQuestion();
         mQuestionTextView.setOnClickListener(nextQuestionClickListener);
     }
@@ -82,8 +109,21 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.d(TAG, "onSaveInstanceState() called");
         savedInstanceState.putInt(KEY_QUESTION_INDEX, mCurrentQuestion);
+        savedInstanceState.putBooleanArray(KEY_IS_CHEATER, mIsCheater);
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater[mCurrentQuestion] = mIsCheater[mCurrentQuestion] || CheatActivity.wasAnswerShown(data);
+        }
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -121,9 +161,11 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(final boolean userAnswer) {
         boolean actualAnswer = mQuestions[mCurrentQuestion].isAnswerTrue();
-        final int messageResId = userAnswer == actualAnswer
-                ? R.string.correct_toast
-                : R.string.incorrect_toast;
+        final int messageResId = mIsCheater[mCurrentQuestion]
+                ? R.string.judgment_toast
+                : userAnswer == actualAnswer
+                    ? R.string.correct_toast
+                    : R.string.incorrect_toast;
         Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_SHORT).show();
     }
 }
