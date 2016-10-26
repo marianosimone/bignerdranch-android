@@ -1,10 +1,14 @@
 package com.marianosimone.geoquiz;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -34,6 +38,27 @@ public class CheatActivity extends AppCompatActivity {
                 answerTextView.setText(isAnswerTrue ? R.string.true_button : R.string.false_button);
                 mAnswerShown = true;
                 setAnswerShownResult();
+                showAnimation();
+            }
+
+            private void showAnimation() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    final int cx = showAnswerButton.getWidth() / 2;
+                    final int cy = showAnswerButton.getHeight() / 2;
+                    final float radius = showAnswerButton.getWidth();
+                    final Animator animator = ViewAnimationUtils
+                            .createCircularReveal(showAnswerButton, cx, cy, radius, 0);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(final Animator animation) {
+                            super.onAnimationEnd(animation);
+                            showAnswerButton.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    animator.start();
+                } else {
+                    showAnswerButton.setVisibility(View.INVISIBLE);
+                }
             }
         });
     }
