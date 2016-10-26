@@ -32,7 +32,7 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "OnCreate(Bundle) called");
+        Log.d(TAG, "onCreate(Bundle) called");
 
         setContentView(R.layout.activity_quiz);
 
@@ -91,13 +91,13 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "OnStart() called");
+        Log.d(TAG, "onStart() called");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "OnPause() called");
+        Log.d(TAG, "onPause() called");
     }
 
     @Override
