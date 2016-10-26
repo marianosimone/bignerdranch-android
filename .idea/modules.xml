@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/CriminalIntent/CriminalIntent.iml" filepath="$PROJECT_DIR$/CriminalIntent/CriminalIntent.iml" />
       <module fileurl="file://$PROJECT_DIR$/bignerdranch-android.iml" filepath="$PROJECT_DIR$/bignerdranch-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/geoquiz/geoquiz.iml" filepath="$PROJECT_DIR$/geoquiz/geoquiz.iml" />
     </modules>
