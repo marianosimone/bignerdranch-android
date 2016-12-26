@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.util.List;
 
-import static marianosimone.com.criminalintent.CrimeActivity.EXTRA_CRIME_POSITION;
+import static marianosimone.com.criminalintent.CrimePagerActivity.EXTRA_CRIME_POSITION;
 
 public class CrimeListFragment extends Fragment {
 
@@ -84,7 +84,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(final View view) {
             startActivityForResult(
-                    CrimeActivity.newIntent(getActivity(), mCrime.getId(), mPosition),
+                    CrimePagerActivity.newIntent(getActivity(), mCrime.getId()),
                     REQUEST_CODE_CRIME
             );
         }

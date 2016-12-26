@@ -17,7 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import static android.app.Activity.RESULT_OK;
-import static marianosimone.com.criminalintent.CrimeActivity.EXTRA_CRIME_POSITION;
+import static marianosimone.com.criminalintent.CrimePagerActivity.EXTRA_CRIME_POSITION;
 
 public class CrimeFragment extends Fragment {
 
