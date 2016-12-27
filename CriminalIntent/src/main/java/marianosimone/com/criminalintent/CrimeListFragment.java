@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -51,7 +52,7 @@ public class CrimeListFragment extends Fragment {
             if (data == null) {
                 return;
             }
-            mAdapter.notifyItemChanged(data.getIntExtra(EXTRA_CRIME_POSITION, 0));
+            mAdapter.notifyItemChanged(data.getIntExtra(EXTRA_CRIME_POSITION, 0) - 1);
         }
     }
 
@@ -79,12 +80,18 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(mDateFormat.format(mCrime.getDate()));
             mSolvedCheckBox.setChecked(mCrime.isSolved());
+            mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
+                    mCrime.setSolved(b);
+                }
+            });
         }
 
         @Override
         public void onClick(final View view) {
             startActivityForResult(
-                    CrimePagerActivity.newIntent(getActivity(), mCrime.getId()),
+                    CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), mPosition),
                     REQUEST_CODE_CRIME
             );
         }
