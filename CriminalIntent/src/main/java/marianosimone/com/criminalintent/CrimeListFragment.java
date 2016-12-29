@@ -3,10 +3,16 @@ package marianosimone.com.criminalintent;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -21,26 +27,53 @@ import static marianosimone.com.criminalintent.CrimePagerActivity.EXTRA_CRIME_PO
 public class CrimeListFragment extends Fragment {
 
     private static final int REQUEST_CODE_CRIME = 0;
+    private static final java.lang.String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
     private DateFormat mDateFormat;
     private RecyclerView mCrimeListRecyclerView;
     private CrimeAdapter mAdapter;
+    private boolean mSubtitleVisible;
+    private final CrimeLab mCrimeLab = CrimeLab.get();
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public void onCreate(final @Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(
+            final LayoutInflater inflater,
+            final ViewGroup container,
+            final @Nullable Bundle savedInstanceState
+    ) {
         mDateFormat = android.text.format.DateFormat.getLongDateFormat(getContext());
         final View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         mCrimeListRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mCrimeListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        if (savedInstanceState != null) {
+            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
         updateUI();
         return view;
     }
 
     private void updateUI() {
-        final CrimeLab crimeLab = CrimeLab.get(getActivity());
-        final List<Crime> crimes = crimeLab.getCrimes();
+        final List<Crime> crimes = mCrimeLab.getCrimes();
+        if (mAdapter == null) {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeListRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
+        updateSubtitle();
+    }
+
+    @Override
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
 
     @Override
@@ -56,6 +89,46 @@ public class CrimeListFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(final @NonNull Menu menu, final @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime_list, menu);
+        final MenuItem subtitleMenuItem = menu.findItem(R.id.menu_item_show_subtitle);
+        if (mSubtitleVisible) {
+            subtitleMenuItem.setTitle(R.string.hide_subtitle);
+        } else {
+            subtitleMenuItem.setTitle(R.string.show_subtitle);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_crime:
+                final Crime crime = new Crime();
+                final int position = mCrimeLab.addCrime(crime);
+                final Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId(), position);
+                startActivity(intent);
+                return true;
+            case R.id.menu_item_show_subtitle:
+                mSubtitleVisible = !mSubtitleVisible;
+                updateSubtitle();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void updateSubtitle() {
+        final int crimeCount = mCrimeLab.getCrimes().size();
+        final String subtitle = mSubtitleVisible
+                ? getResources().getQuantityString(R.plurals.subtitle_format, crimeCount, crimeCount)
+                : null;
+
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Crime mCrime;
@@ -66,7 +139,7 @@ public class CrimeListFragment extends Fragment {
         private final CheckBox mSolvedCheckBox;
 
 
-        public CrimeHolder(final View itemView) {
+        CrimeHolder(final View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_crime_title_text_view);
@@ -74,7 +147,7 @@ public class CrimeListFragment extends Fragment {
             mSolvedCheckBox = (CheckBox) itemView.findViewById(R.id.list_item_crime_solved_check_box);
         }
 
-        public void bindCrime(final int position, final Crime crime) {
+        void bindCrime(final int position, final Crime crime) {
             mCrime = crime;
             mPosition = position;
             mTitleTextView.setText(mCrime.getTitle());
@@ -101,7 +174,7 @@ public class CrimeListFragment extends Fragment {
 
         private final List<Crime> mCrimes;
 
-        public CrimeAdapter(final List<Crime> crimes) {
+        CrimeAdapter(final List<Crime> crimes) {
             mCrimes = crimes;
         }
 

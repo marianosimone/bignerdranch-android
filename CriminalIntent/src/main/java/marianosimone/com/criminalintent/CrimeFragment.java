@@ -48,7 +48,7 @@ public class CrimeFragment extends Fragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        mCrime = CrimeLab.get().getCrime(crimeId);
         mDateFormat = android.text.format.DateFormat.getLongDateFormat(getContext());
         returnResult();
     }

@@ -1,6 +1,6 @@
 package marianosimone.com.criminalintent;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,21 +11,15 @@ public class CrimeLab {
 
     private final List<Crime> mCrimes;
 
-    public static CrimeLab get(final Context context) {
+    public static CrimeLab get() {
         if (sCrimeLab == null) {
-            sCrimeLab = new CrimeLab(context);
+            sCrimeLab = new CrimeLab();
         }
         return sCrimeLab;
     }
 
-    private CrimeLab(final Context context) {
+    private CrimeLab() {
         mCrimes = new ArrayList<>();
-        for (int i = 0; i < 100; ++i) {
-            final Crime crime = new Crime();
-            crime.setTitle("Crime #" + i);
-            crime.setSolved(i % 2 == 0);
-            mCrimes.add(crime);
-        }
     }
 
     public List<Crime> getCrimes() {
@@ -39,5 +33,10 @@ public class CrimeLab {
             }
         }
         return null;
+    }
+
+    public int addCrime(final @NonNull Crime crime) {
+        mCrimes.add(crime);
+        return mCrimes.size()-1;
     }
 }
